@@ -1,0 +1,17 @@
+# Compiled output
+out/
+
+# SQLite database files
+*.db
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files (generated at runtime)
+logs/
