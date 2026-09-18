@@ -1,4 +1,4 @@
-# 🎯 Distributed Fleet Management & Logistics Tracker
+# 🎯 FleetSync
 
 A highly concurrent, modular Java console application designed to manage vehicle rosters, assign delivery routes, and monitor maintenance in a real-world logistics context . 
 
