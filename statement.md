@@ -1,13 +1,13 @@
 # Project Statement
 
-## Distributed Fleet Management & Logistics Tracker
+## FleetSync
 
 ---
 
 ### Author
 
 **Name:** Shivang Kaushal
-**Project Title:** Distributed Fleet Management & Logistics Tracker  
+**Project Title:** FleetSync 
 **Technology:** Core Java (JDK 8+)  
 **Database:** SQLite (JDBC)  
 **Version Control:** Git
