@@ -171,5 +171,5 @@ The Distributed Fleet Management & Logistics Tracker successfully addresses the 
 
 ---
 
-*Prepared by: Shivang*
+*Prepared by: Shivang Kaushal*
 
