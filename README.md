@@ -1,177 +1,75 @@
-# Distributed Fleet Management & Logistics Tracker
+# 🎯 Distributed Fleet Management & Logistics Tracker
 
-**Author:** Shivang
+A highly concurrent, modular Java console application designed to manage vehicle rosters, assign delivery routes, and monitor maintenance in a real-world logistics context . 
 
----
-
-## 1. Project Overview
-
-### 1.1 Objective
-
-This project implements a **Distributed Fleet Tracking System** — a modular Java console application designed to manage vehicle rosters, assign delivery routes, and monitor maintenance in a real-world logistics context. The system demonstrates core Java technologies including OOP, multithreading, JDBC, collections, I/O streams, and custom exception handling.
-
-### 1.2 Problem Statement
-
-Logistics companies operating large vehicle fleets face challenges in:
-- Tracking which vehicles are available, on-route, or due for maintenance
-- Preventing double-booking of vehicles already assigned to active deliveries
-- Monitoring multiple concurrent deliveries in real-time without freezing the system
-- Persisting fleet data across application restarts
-
-This application addresses all of the above through a clean, modular architecture.
-
-### 1.3 Key Modules
-
-| Module | Responsibility |
-|---|---|
-| **Vehicle Roster Management** | Full CRUD operations (Create, Read, Update, Delete) on the fleet database with both in-memory and persistent storage |
-| **Route Assignment Engine** | Assigns available vehicles to specific delivery routes, preventing double-booking via status validation |
-| **Maintenance & Health Logging** | Tracks vehicle trip counts, auto-flags units for maintenance at 10+ trips, and generates status reports |
-| **Concurrent Route Monitoring** | Background threads simulate real-time delivery tracking without freezing the main application |
-| **Data Persistence** | SQLite relational database stores vehicle records across sessions via JDBC |
-| **File I/O** | Bulk-load vehicles from text files and export formatted maintenance reports to disk |
-| **Operational Logging** | Thread-safe singleton logger records all system activity to `logs/fleet.log` |
-
-### 1.4 Architecture Diagram
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         Main.java                               │
-│                  (Interactive Console Menu)                      │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      FleetManager.java                          │
-│         Central Controller (HashMap + ArrayList)                │
-│                                                                 │
-│  ┌──────────────┐  ┌───────────────┐  ┌───────────────────┐    │
-│  │ Vehicle (abs) │  │    Route      │  │   RouteMonitor    │    │
-│  │  ┌─────────┐ │  │  (data model) │  │  (Runnable thread)│    │
-│  │  │CargoTruck│ │  └───────────────┘  └───────────────────┘    │
-│  │  ├─────────┤ │                                               │
-│  │  │Refrig.  │ │                                               │
-│  │  │Van      │ │                                               │
-│  │  └─────────┘ │                                               │
-│  └──────────────┘                                               │
-└────────┬──────────────────┬──────────────────┬──────────────────┘
-         │                  │                  │
-         ▼                  ▼                  ▼
-┌──────────────┐  ┌──────────────────┐  ┌──────────────┐
-│DatabaseHelper│  │   FileIOHelper   │  │  FleetLogger │
-│  (JDBC/SQL)  │  │(Reader/Writer)   │  │  (Singleton) │
-└──────┬───────┘  └───────┬──────────┘  └──────┬───────┘
-       │                  │                    │
-       ▼                  ▼                    ▼
-  fleet_data.db    vehicles_init.txt      logs/fleet.log
-                   maintenance_report
-```
+This project was developed for the **Programming in Java** course. It bridges core object-oriented principles with advanced runtime capabilities like multithreading and database persistence to solve complex logistical challenges  .
 
 ---
 
-## 2. Prerequisites
+## 🧠 Core Java Concepts 
 
-- **JDK 8** or higher (verify with `java -version` and `javac -version`)
-- **SQLite JDBC Driver** — download [`sqlite-jdbc-3.46.0.0.jar`](https://github.com/xerial/sqlite-jdbc/releases) and place it in the project root directory
+This system is architected to explicitly demonstrate the foundational concepts of Java programming:
 
-> **Note:** No build tool (Maven/Gradle) is required. The project compiles and runs with standard `javac` and `java` commands.
-
----
-
-## 3. Project Structure
-
-```
-Java Vityarthi Project/
-├── .gitignore
-├── README.md
-├── sqlite-jdbc-3.46.0.0.jar          # JDBC driver (place here)
-├── data/
-│   ├── vehicles_init.txt              # Bulk-load seed data (pipe-delimited)
-│   └── reports/                       # Generated maintenance reports (auto-created)
-├── logs/
-│   └── fleet.log                      # Runtime log file (auto-created)
-├── src/
-│   └── com/
-│       └── fleetmanager/
-│           ├── Main.java                          # CLI menu & entry point
-│           ├── core/
-│           │   ├── Vehicle.java                   # Abstract base class + VehicleStatus enum
-│           │   ├── CargoTruck.java                # Subclass (inheritance, super, override)
-│           │   ├── RefrigeratedVan.java           # Subclass (inheritance, super, override)
-│           │   └── FleetManager.java              # Central controller (HashMap, ArrayList)
-│           ├── route/
-│           │   ├── Route.java                     # Route data model + RouteStatus enum
-│           │   └── RouteMonitor.java              # Runnable thread for live tracking
-│           ├── db/
-│           │   └── DatabaseHelper.java            # JDBC CRUD utility (SQLite)
-│           ├── io/
-│           │   └── FileIOHelper.java              # Character-stream Reader/Writer
-│           ├── logging/
-│           │   └── FleetLogger.java               # Thread-safe singleton logger
-│           └── exceptions/
-│               ├── VehicleUnavailableException.java
-│               ├── VehicleNotFoundException.java
-│               ├── RouteAssignmentException.java
-│               └── DatabaseConnectionException.java
-└── out/                                           # Compiled .class files (auto-generated)
-```
-
-**Total Classes: 13** | **Total Packages: 7**
+* **Multithreading & Concurrency:** The system simulates real-time vehicle tracking without freezing the UI . Daemon threads (`RouteMonitor`) utilize `Runnable` and `synchronized` methods to concurrently process active deliveries safely .
+* **Object-Oriented Programming (OOP):** Strict adherence to abstraction and inheritance . An abstract `Vehicle` base class is extended by specialized `CargoTruck` and `RefrigeratedVan` classes utilizing method overriding and the `super` keyword .
+* **Data Persistence & File I/O:** Bridges in-memory collections (`HashMap`/`ArrayList`) with durable storage . Uses JDBC (SQLite) for SQL-based CRUD operations, and Character-oriented streams to bulk-load initialization data and export reports .
+* **Robust Exception Handling:** Enforces business logic and prevents crashes using custom, user-defined exceptions (e.g., `VehicleUnavailableException`) .
 
 ---
 
-## 4. How to Compile & Run
+## ⚙️ System Architecture: How It Works
 
-### Step 1: Verify Prerequisites
+The project adheres to strict Separation of Concerns (SoC) across 13 classes  :
 
-```bash
-# Check Java is installed
-java -version
-javac -version
-```
+1. **The Core Engine (`FleetManager.java`):** Central controller that manages in-memory data structures and validates business rules before assigning routes .
+2. **The Interface (`Main.java`):** An interactive Command-Line Interface (CLI) that routes user commands without handling business logic directly .
+3. **The Utility Layer:** Dedicated helper classes abstract external system interactions . `DatabaseHelper` manages SQL execution, `FileIOHelper` handles disk writes, and a thread-safe singleton `FleetLogger` records all operations to `logs/fleet.log` .
 
-### Step 2: Download the SQLite JDBC Driver
+---
 
-Download [`sqlite-jdbc-3.46.0.0.jar`](https://github.com/xerial/sqlite-jdbc/releases/tag/3.46.0.0) from the releases page and place the `.jar` file in the project root directory (same level as `README.md` and `src/`).
+## 💻 Setup & Installation
 
-### Step 3: Compile All Source Files
+**Prerequisites:**
+* **JDK 8+** (Verify with `java -version`) 
+* **SQLite JDBC Driver:** Download `sqlite-jdbc-3.46.0.0.jar` 
 
-Open a terminal in the project root directory and run:
+> ⚠️ **CRITICAL:** Place the `sqlite-jdbc-3.46.0.0.jar` file directly in the project root directory alongside the `src/` folder for the classpath to resolve correctly  .
 
-**Windows (Command Prompt / PowerShell):**
+**1. Compile the Source Code**
+
+*Windows (Command Prompt / PowerShell):*
 ```bash
 javac -cp ".;sqlite-jdbc-3.46.0.0.jar" -d out src/com/fleetmanager/exceptions/*.java src/com/fleetmanager/logging/*.java src/com/fleetmanager/core/*.java src/com/fleetmanager/route/*.java src/com/fleetmanager/db/*.java src/com/fleetmanager/io/*.java src/com/fleetmanager/*.java
 ```
 
-**Linux / macOS:** (use `:` instead of `;` as the classpath separator)
+*Linux / macOS:*
 ```bash
 javac -cp ".:sqlite-jdbc-3.46.0.0.jar" -d out src/com/fleetmanager/exceptions/*.java src/com/fleetmanager/logging/*.java src/com/fleetmanager/core/*.java src/com/fleetmanager/route/*.java src/com/fleetmanager/db/*.java src/com/fleetmanager/io/*.java src/com/fleetmanager/*.java
 ```
 
-This compiles all 13 source files into the `out/` directory. You should see **no errors**.
+**2. Execute the Application**
 
-### Step 4: Run the Application
-
-**Windows:**
+*Windows:*
 ```bash
 java -cp "out;sqlite-jdbc-3.46.0.0.jar" com.fleetmanager.Main
 ```
 
-**Linux / macOS:**
+*Linux / macOS:*
 ```bash
 java -cp "out:sqlite-jdbc-3.46.0.0.jar" com.fleetmanager.Main
 ```
 
-### Step 5: Use the Application
+---
 
-On launch, the system automatically:
-1. Creates `fleet_data.db` (SQLite database) in the project root
-2. Creates `logs/fleet.log` for operational logging
-3. Loads any previously saved vehicles from the database
+## 🚀 Execution & Operational Scenarios
 
-You will see the interactive menu:
+The system operates via an interactive CLI menu  .
 
-```
+### Scenario 1: Initializing the Fleet
+Bulk load seed data from text files and verify persistence .
+
+**Expected Terminal Output:**
+```text
 === Distributed Fleet Management System ===
 1.  Add Vehicle
 2.  View All Vehicles
@@ -183,109 +81,50 @@ You will see the interactive menu:
 8.  Load Vehicles from File
 9.  Generate Maintenance Report
 10. Exit
-Enter your choice:
+Enter your choice: 8
+
+[>] Loading vehicles from file (data/vehicles_init.txt)...
+[+] SUCCESS: 6 vehicle(s) loaded and saved to database.
 ```
 
-### Recommended First Run Workflow
+### Scenario 2: Concurrent Route Tracking & Double-Booking Prevention
+Assigns a vehicle to a route, triggering a background thread . Attempting to assign the same vehicle immediately throws an exception.
 
-1. **Option 8** → Load vehicles from file (press Enter for the default `data/vehicles_init.txt`) — loads 6 sample vehicles
-2. **Option 2** → View all vehicles to confirm they were loaded
-3. **Option 5** → Assign a route (e.g., Vehicle `VH001`, Route `RT001`, Mumbai → Delhi, 1400 km) — a background thread starts tracking
-4. **Option 6** → View active routes to see real-time progress
-5. **Option 5** → Try assigning the same vehicle again — you will see a `VehicleUnavailableException` (double-booking prevention)
-6. **Option 7** → View maintenance alerts after vehicles complete 10+ trips
-7. **Option 9** → Generate a maintenance report to `data/reports/maintenance_report.txt`
-8. **Option 10** → Exit gracefully (closes DB connection and logger)
+**Expected Terminal Output:**
+```text
+Enter your choice: 5
+Enter Vehicle ID: VH001
+Enter Route ID: RT001
+Enter Route Distance (km): 1400
 
----
+[+] Route assigned! Background tracking started for VH001.
 
-## 5. Features
-
-| Feature | Description |
-|---|---|
-| **Vehicle CRUD** | Add, view, update, and remove vehicles from the fleet with full input validation |
-| **Route Assignment** | Assign available vehicles to delivery routes with double-booking prevention |
-| **Live Tracking** | Background daemon threads simulate real-time delivery progress (15–30 km every 2 seconds) |
-| **Maintenance Alerts** | Automatic flagging when vehicles reach 10+ completed trips |
-| **Data Persistence** | SQLite database stores vehicle records durably across application restarts |
-| **Bulk Loading** | Import vehicles from pipe-delimited text files (`type\|id\|plate\|model\|extra`) |
-| **Report Generation** | Export formatted maintenance status reports to disk with timestamps |
-| **Operational Logging** | All operations logged to `logs/fleet.log` with ISO timestamps, log levels, and thread names |
-| **Graceful Error Handling** | Custom exceptions, try-catch coverage on all menu options, no application crashes |
-
----
-
-## 6. Seed Data Format
-
-The file `data/vehicles_init.txt` uses pipe-delimited format:
-
+Enter your choice: 5
+Enter Vehicle ID: VH001
+[!] ERROR (VehicleUnavailableException): Vehicle VH001 is currently ON_ROUTE and cannot be assigned.
 ```
-type|id|licensePlate|model|extraField
-```
-
-| Field | Description | Example |
-|---|---|---|
-| `type` | `CARGO_TRUCK` or `REFRIGERATED_VAN` | `CARGO_TRUCK` |
-| `id` | Unique vehicle identifier | `VH001` |
-| `licensePlate` | Vehicle registration number | `KA-01-AB-1234` |
-| `model` | Manufacturer and model name | `Tata Prima 4928` |
-| `extraField` | Payload (tons) for trucks, min temp (°C) for vans | `18.5` or `-18.0` |
-
----
-
-## 7. Java Concepts Demonstrated
-
-| Concept | Where It's Used |
-|---|---|
-| **Abstract Classes** | `Vehicle` is abstract with `getVehicleType()` method |
-| **Inheritance & `super`** | `CargoTruck` and `RefrigeratedVan` extend `Vehicle`, call `super()` |
-| **Method Overriding** | Both subclasses override `getVehicleType()` and `toString()` |
-| **Encapsulation** | All fields are `private` with `public` getters/setters |
-| **Multithreading (`Runnable`)** | `RouteMonitor` implements `Runnable`, runs in daemon `Thread` |
-| **Synchronization** | `synchronized` methods in `Route` for thread-safe progress updates |
-| **Custom Exceptions** | 4 user-defined exceptions with `try-catch`, `throw`, `throws` |
-| **`HashMap`** | `HashMap<String, Vehicle>` for O(1) roster lookups in `FleetManager` |
-| **`ArrayList`** | `ArrayList<Route>` for managing active routes |
-| **Character I/O Streams** | `BufferedReader`/`FileReader` and `BufferedWriter`/`FileWriter` in `FileIOHelper` |
-| **JDBC Database** | SQLite via `DriverManager`, `PreparedStatement`, `ResultSet` in `DatabaseHelper` |
-| **Singleton Pattern** | Thread-safe `FleetLogger` with `synchronized getInstance()` |
-| **Functional Interface** | `RouteCompletionCallback` with `@FunctionalInterface` annotation |
-| **Enums** | `VehicleStatus` (AVAILABLE, ON_ROUTE, MAINTENANCE) and `RouteStatus` (PENDING, IN_PROGRESS, COMPLETED) |
-| **Stream API** | Used in `FleetManager` for filtering active routes and maintenance-flagged vehicles |
-
----
-
-## 8. Database Schema
-
-The SQLite database (`fleet_data.db`) contains a single table:
-
-```sql
-CREATE TABLE IF NOT EXISTS vehicles (
-    id           TEXT PRIMARY KEY,
-    license_plate TEXT NOT NULL,
-    model        TEXT NOT NULL,
-    vehicle_type TEXT NOT NULL,        -- 'CARGO_TRUCK' or 'REFRIGERATED_VAN'
-    status       TEXT NOT NULL DEFAULT 'AVAILABLE',
-    trip_count   INTEGER NOT NULL DEFAULT 0,
-    extra_field  TEXT                   -- payload tons or min temperature
-);
+*(Meanwhile, in the background / logs)*
+```text
+[INFO] [RouteMonitor-RT001] Route RT001: 22.4/1400.0 km — Vehicle VH001
 ```
 
 ---
 
-## 9. Log File Format
+## 📁 Repository Map
 
-All operations are logged to `logs/fleet.log` in the following format:
-
-```
-[2026-09-15 22:15:30] [INFO] [main] System initialized. 6 vehicle(s) loaded from database.
-[2026-09-15 22:15:35] [INFO] [RouteMonitor-RT001] Started route RT001 with vehicle VH001 (Mumbai -> Delhi)
-[2026-09-15 22:15:37] [INFO] [RouteMonitor-RT001] Route RT001: 22.4/1400.0 km — Vehicle VH001
-[2026-09-15 22:16:10] [WARN] [RouteMonitor-RT001] Vehicle VH001 has reached 10 trips and requires maintenance!
-```
+* `src/com/fleetmanager/Main.java` — Interactive CLI menu and execution entry point .
+* `src/com/fleetmanager/core/` — OOP data models (`Vehicle.java`, `CargoTruck.java`, `RefrigeratedVan.java`, and `FleetManager.java`) .
+* `src/com/fleetmanager/route/` — Concurrency implementations (`Route.java` and `RouteMonitor.java`) .
+* `src/com/fleetmanager/db/DatabaseHelper.java` — JDBC CRUD utility handling SQLite connections .
+* `src/com/fleetmanager/io/FileIOHelper.java` — Character-stream Reader/Writer for text files and reports .
+* `src/com/fleetmanager/logging/FleetLogger.java` — Thread-safe singleton logging utility .
+* `src/com/fleetmanager/exceptions/` — User-defined exception classes for validation and error handling .
+* `data/vehicles_init.txt` — Pipe-delimited seed data for bulk loading .
+* `sqlite-jdbc-3.46.0.0.jar` — Required SQLite JDBC driver .
+* `project_report.md` — Detailed system architecture and syllabus mapping documentation.
 
 ---
 
-## 10. License
+## 👨‍💻 Author
 
-MIT License
+**Made by:** Shivang Kaushal
